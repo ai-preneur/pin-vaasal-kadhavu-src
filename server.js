@@ -16,16 +16,22 @@ const allowedOrigins = [
   'https://vaasal-kadhavu.vercel.app'
 ];
 
-// app.use(cors({
-//   origin: function(origin, callback) {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   }
-// }));
-app.use(cors());
+app.use(cors({
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      // Don't throw error, just reject
+      callback(null, false);
+    }
+  },
+  credentials: true
+}));
+
+// app.use(cors());
 app.use(express.json());
 
 // Middleware to verify JWT token
@@ -81,4 +87,5 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 
 });
+
 
